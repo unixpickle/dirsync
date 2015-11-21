@@ -74,6 +74,10 @@ func (s Syncer) download(remote FileInfo, local string) error {
 		return s.Downloader.Download(remote.Path, local)
 	}
 
+	if err := os.Mkdir(local, 0700); err != nil {
+		return err
+	}
+
 	listing, err := s.Lister.List(remote.Path)
 	if err != nil {
 		return err
