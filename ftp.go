@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/jlaffaye/ftp"
 )
@@ -49,6 +50,13 @@ func (f *FTP) List(dir string) ([]FileInfo, error) {
 
 	res := make([]FileInfo, len(entries))
 	for i, entry := range entries {
+		// NOTE: if the FTP server is compromised, they could theoretically
+		// do something malicious like give a "filename" with a / in it.
+		// I don't trust the FTP library to prevent against these situations.
+		if strings.ContainsRune(entry.Name, '/') {
+			panic("invalid filename: " + entry.Name)
+		}
+
 		res[i] = FileInfo{
 			Path:     path.Join(dir, entry.Name),
 			IsDir:    entry.Type == ftp.EntryTypeFolder,

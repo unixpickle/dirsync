@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/unixpickle/dirsync"
 	"github.com/howeyc/gopass"
+	"github.com/unixpickle/dirsync"
 )
 
 func main() {
@@ -36,12 +36,12 @@ func main() {
 	client := dirsync.NewFTP(ftpConfig)
 
 	syncer := dirsync.Syncer{
-		LocalPath: localDir,
+		LocalPath:  localDir,
 		RemotePath: remoteDir,
-		Lister: client,
+		Lister:     client,
 		Downloader: client,
-		Interval: time.Duration(seconds) * time.Second,
-		Verbose: true,
+		Interval:   time.Duration(seconds) * time.Second,
+		Verbose:    true,
 	}
 
 	syncer.Sync()
