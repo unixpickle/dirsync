@@ -2,6 +2,7 @@ package dirsync
 
 import (
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -16,6 +17,8 @@ type Syncer struct {
 	Downloader Downloader
 
 	Interval time.Duration
+
+	Verbose bool
 }
 
 // Sync runs an infinite sync loop.
@@ -26,6 +29,9 @@ func (s Syncer) Sync() error {
 	for {
 		nextTimeout := time.After(s.Interval)
 		if err := s.syncOnce(); err != nil {
+			if s.Verbose {
+				log.Println("Sync failed:", err)
+			}
 			return err
 		}
 		<-nextTimeout
@@ -41,6 +47,9 @@ func (s Syncer) syncOnce() error {
 	}
 
 	for _, path := range a.delete {
+		if s.Verbose {
+			log.Println("Removing local file:", path)
+		}
 		if err := os.RemoveAll(path); err != nil {
 			return err
 		}
@@ -57,6 +66,10 @@ func (s Syncer) syncOnce() error {
 
 // download recursively copies a remote directory to the local path.
 func (s Syncer) download(remote FileInfo, local string) error {
+	if s.Verbose {
+		log.Println("Downloading:", remote, "->", local)
+	}
+
 	if !remote.IsDir {
 		return s.Downloader.Download(remote.Path, local)
 	}
