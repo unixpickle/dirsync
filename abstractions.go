@@ -3,13 +3,13 @@ package dirsync
 type FileInfo struct {
 	IsDir    bool
 	Path     string
-	FileSize int64
+	FileSize uint64
 }
 
 type Lister interface {
-	List(path string) []FileInfo
+	List(path string) ([]FileInfo, error)
 }
 
 type Downloader interface {
-	Download(remotePath, localPath string) bool
+	Download(remotePath, localPath string) error
 }
